@@ -6,5 +6,6 @@
         <li><a href="{{ url_for('course_details', code=course['code']) }}">{{ course.name }}</a> - {{ course.code }}</li>
     {% endfor %}
 </ul>
+    <a class="btn btn-primary" href="{{ url_for('add_course') }}">Add a New Course</a>
 {% endblock %}
 

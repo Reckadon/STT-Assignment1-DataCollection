@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
-    {% extends "base.html" %}
-    {% block content %}
-<head>
-    <title>Add Course</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+    <head>
+        <title>Add Course</title>
+    </head>
+    <body class="mb-3">
     <h1>Add a New Course</h1>
     <form method="post">
         <label for="code">Course Code:</label><br>
@@ -26,9 +26,11 @@
         <input type="text" id="grading" name="grading"><br>
         <label for="description">Description:</label><br>
         <textarea id="description" name="description" rows="4"></textarea><br><br>
-        <input type="submit" value="Add Course">
+        <div class="w-100">
+            <input type="submit" value="Add Course">
+            <a class="btn btn-secondary float-end" href="{{ url_for('index') }}">Back to Home</a>
+        </div>
     </form>
-    <a href="{{ url_for('index') }}">Back to Home</a>
-</body>
+    </body>
 {% endblock %}
 </html>
