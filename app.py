@@ -70,7 +70,13 @@ def add_course():
             'grading': request.form['grading'],
             'description': request.form['description']
         }
+
+        if (course['code'].strip() == '' or course['name'].strip() == '' or course['instructor'].strip() == '' or course['semester'].strip() == '' or course['schedule'].strip() == '' or course['classroom'].strip() == '' or course['prerequisites'].strip() == '' or course['grading'].strip() == '' or course['description'].strip() == ''):
+        	flash(f"You have left some fields empty, Please fill up!!")
+        	return render_template('add_course.html')
+        	
         save_courses(course)
+
         flash(f"Course '{course['name']}' added successfully!", "success")
         return redirect(url_for('course_catalog'))
     return render_template('add_course.html')
