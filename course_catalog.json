@@ -20,5 +20,16 @@
         "prerequisites": "Basic Python, Linux",
         "grading": "50% Assignment, 50% Quiz",
         "description": ""
+    },
+    {
+        "code": "444",
+        "name": "RudraSex",
+        "instructor": "Rudra",
+        "semester": "4",
+        "schedule": "ifhe",
+        "classroom": "ab1111",
+        "prerequisites": "male",
+        "grading": "AA",
+        "description": "please come\r\n"
     }
 ]

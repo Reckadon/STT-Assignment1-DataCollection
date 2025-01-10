@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind
@@ -14,17 +14,26 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 COURSE_FILE = 'course_catalog.json'
 
-# OpenTelemetry Setup
-resource = Resource.create({"service.name": "course-catalog-service"})
-trace.set_tracer_provider(TracerProvider(resource=resource))
-tracer = trace.get_tracer(__name__)
-jaeger_exporter = JaegerExporter(
-    agent_host_name="localhost",
-    agent_port=6831,
-)
-span_processor = BatchSpanProcessor(jaeger_exporter)
-trace.get_tracer_provider().add_span_processor(span_processor)
+# # OpenTelemetry Setup
+# resource = Resource.create({"service.name": "course-catalog-service"})
+# trace.set_tracer_provider(TracerProvider(resource=resource))
+# tracer = trace.get_tracer(__name__)
+# jaeger_exporter = JaegerExporter(
+#     agent_host_name="localhost",
+#     agent_port=6831,
+# )
+# span_processor = BatchSpanProcessor(jaeger_exporter)
+# trace.get_tracer_provider().add_span_processor(span_processor)
+# FlaskInstrumentor().instrument_app(app)
+
+# Instrument Flask with OpenTelemetry
 FlaskInstrumentor().instrument_app(app)
+
+# Configure OpenTelemetry
+trace.set_tracer_provider(TracerProvider())
+console_exporter = ConsoleSpanExporter()
+span_processor = BatchSpanProcessor(console_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
 
 
 # Utility Functions
@@ -71,7 +80,7 @@ def add_course():
             'description': request.form['description']
         }
 
-        if (course['code'].strip() == '' or course['name'].strip() == '' or course['instructor'].strip() == '' or course['semester'].strip() == '' or course['schedule'].strip() == '' or course['classroom'].strip() == '' or course['prerequisites'].strip() == '' or course['grading'].strip() == '' or course['description'].strip() == ''):
+        if any(course[key].strip() == '' for key in list(course.keys())):
         	flash(f"You have left some fields empty, Please fill up!!")
         	return render_template('add_course.html')
         	
