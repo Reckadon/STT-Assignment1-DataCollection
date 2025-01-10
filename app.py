@@ -28,12 +28,11 @@ COURSE_FILE = 'course_catalog.json'
 
 # Instrument Flask with OpenTelemetry
 FlaskInstrumentor().instrument_app(app)
-
-# Configure OpenTelemetry
+#
+# # Configure OpenTelemetry
 trace.set_tracer_provider(TracerProvider())
 console_exporter = ConsoleSpanExporter()
-span_processor = BatchSpanProcessor(console_exporter)
-trace.get_tracer_provider().add_span_processor(span_processor)
+trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
 
 
 # Utility Functions
