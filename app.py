@@ -14,26 +14,25 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 COURSE_FILE = 'course_catalog.json'
 
-# # OpenTelemetry Setup
-# resource = Resource.create({"service.name": "course-catalog-service"})
-# trace.set_tracer_provider(TracerProvider(resource=resource))
-# tracer = trace.get_tracer(__name__)
-# jaeger_exporter = JaegerExporter(
-#     agent_host_name="localhost",
-#     agent_port=6831,
-# )
-# span_processor = BatchSpanProcessor(jaeger_exporter)
-# trace.get_tracer_provider().add_span_processor(span_processor)
-# FlaskInstrumentor().instrument_app(app)
+# OpenTelemetry Setup
+resource = Resource.create({"service.name": "course-catalog-service"})
+trace.set_tracer_provider(TracerProvider(resource=resource))
+tracer = trace.get_tracer(__name__)
+jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
+    agent_port=6831,
+)
+span_processor = BatchSpanProcessor(jaeger_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
 
 # Instrument Flask with OpenTelemetry
 # FlaskInstrumentor().instrument_app(app)
-#
+
 # # Configure OpenTelemetry
-trace.set_tracer_provider(TracerProvider())
-tracer = trace.get_tracer(__name__)
-console_exporter = ConsoleSpanExporter()
-trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
+# trace.set_tracer_provider(TracerProvider())
+# tracer = trace.get_tracer(__name__)
+# console_exporter = ConsoleSpanExporter()
+# trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
 
 
 # Utility Functions
