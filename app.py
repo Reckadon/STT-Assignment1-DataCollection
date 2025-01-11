@@ -4,9 +4,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
 from opentelemetry.trace import SpanKind, StatusCode
 
 # Flask App Initialization
@@ -84,6 +83,7 @@ def course_catalog():
         except Exception as e:
             span.set_status(StatusCode.ERROR)
             span.add_event("Unable to load course data. Error: " + str(e))
+            span.set_attribute("http.status_code", 505)
             return redirect(url_for('index'))
 
         course_names = ", ".join(course['code'] + ' ' + course['name'] for course in courses)
@@ -91,6 +91,7 @@ def course_catalog():
 
         response = render_template('course_catalog.html', courses=courses)
         span.add_event("Rendered Course Catalog")
+        span.set_status(StatusCode.OK)
         span.set_attribute("http.status_code", 200)
         return response, 200
 
@@ -118,12 +119,17 @@ def add_course():
             if any(course[key].strip() == '' for key in list(course.keys())):
                 flash(f"You have left some fields empty, Please fill up!!")
                 span.add_event("Malformed Form Submissions")
+                span.set_status(StatusCode.ERROR)
+                span.set_attribute("http.status_code", 400)
                 return render_template('add_course.html')
 
             span.add_event("Submissions Validated Successfully")
             save_courses(course)
             span.add_event("New Course Added: " + course['code'] + ' ' + course['name'])
             flash(f"Course '{course['name']}' added successfully!", "success")
+
+            span.set_status(StatusCode.OK)
+            span.set_attribute("http.status_code", 200)
             return redirect(url_for('course_catalog'))
 
         response = render_template('add_course.html')
@@ -141,10 +147,15 @@ def course_details(code):
         if not course:
             span.add_event("Requested Course " + code + " Not found")
             flash(f"No course found with code '{code}'.", "error")
+            span.set_status(StatusCode.ERROR)
+            span.set_attribute("http.status_code", 400)
             return redirect(url_for('course_catalog'))
 
         response = render_template('course_details.html', course=course)
         span.add_event("Requested Course " + code + " details rendered")
+
+        span.set_status(StatusCode.OK)
+        span.set_attribute("http.status_code", 200)
         return response, 200
 
 
