@@ -7,7 +7,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
-from opentelemetry.trace import SpanKind
+from opentelemetry.trace import SpanKind, StatusCode
 
 # Flask App Initialization
 app = Flask(__name__)
@@ -42,7 +42,9 @@ def load_courses():
     if not os.path.exists(COURSE_FILE):
         return []  # Return an empty list if the file doesn't exist
     with open(COURSE_FILE, 'r') as file:
-        return json.load(file)
+        with create_span("load-courses-span") as span:
+            span.add_event("Loaded Courses from JSON file")
+            return json.load(file)
 
 
 def save_courses(data):
@@ -52,7 +54,7 @@ def save_courses(data):
     with open(COURSE_FILE, 'w') as file:
         json.dump(courses, file, indent=4)
 
-def trace_span(name, Kind=SpanKind.SERVER):
+def create_span(name, Kind=SpanKind.SERVER):
     return tracer.start_as_current_span(name, kind=Kind)
 
 def span_attributes(span):
@@ -64,21 +66,27 @@ def span_attributes(span):
 # Routes
 @app.route('/')
 def index():
-    with trace_span("root-span") as span:
-        span_attributes(span)        
-        response = render_template('index.html')
-        span.add_event("Rendered Course Information Panel")
+    with create_span("index-span") as span:
+        span_attributes(span)
+        span.add_event("Rendered Course Information Index Page")
         span.set_attribute("http.status_code", 200)
-
+        span.set_status(StatusCode.OK)
+        response = render_template('index.html')
         return response, 200
 
 
 
 @app.route('/catalog')
 def course_catalog():
-    with trace_span("catalog-span") as span:
+    with create_span("catalog-span") as span:
         span_attributes(span)
-        courses = load_courses()
+        try:
+            courses = load_courses()
+        except Exception as e:
+            span.set_status(StatusCode.ERROR)
+            span.add_event("Unable to load course data. Error: " + str(e))
+            return redirect(url_for('index'))
+
         course_names = ", ".join(course['code'] + ' ' + course['name'] for course in courses)
         span.add_event(f"Loaded Courses named: {course_names}")
 
@@ -90,7 +98,7 @@ def course_catalog():
 
 @app.route('/add_course', methods=['GET', 'POST'])
 def add_course():
-    with trace_span("add_course-span") as span:
+    with create_span("add-course-span") as span:
         span_attributes(span)
         if request.method == 'POST':
             course = {
@@ -107,6 +115,7 @@ def add_course():
 
             span.add_event("Form Submissions Recorded")
 
+            # form validation
             if any(course[key].strip() == '' for key in list(course.keys())):
                 flash(f"You have left some fields empty, Please fill up!!")
                 span.add_event("Malformed Form Submissions")
@@ -114,7 +123,6 @@ def add_course():
 
             span.add_event("Submissions Validated Successfully")
             save_courses(course)
-
             span.add_event("New Course Added: " + course['code'] + ' ' + course['name'])
             flash(f"Course '{course['name']}' added successfully!", "success")
             return redirect(url_for('course_catalog'))
@@ -126,9 +134,10 @@ def add_course():
 
 @app.route('/course/<code>')
 def course_details(code):
-    with trace_span("course_details-span") as span:
+    with create_span("course-details-span") as span:
         span_attributes(span)
         courses = load_courses()
+
         course = next((course for course in courses if course['code'] == code), None)
         if not course:
             span.add_event("Requested Course " + code + " Not found")
