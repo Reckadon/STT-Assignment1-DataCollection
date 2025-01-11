@@ -31,8 +31,8 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 # # Configure OpenTelemetry
 # trace.set_tracer_provider(TracerProvider())
 # tracer = trace.get_tracer(__name__)
-# console_exporter = ConsoleSpanExporter()
-# trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
+console_exporter = ConsoleSpanExporter()
+trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
 
 
 # Utility Functions
