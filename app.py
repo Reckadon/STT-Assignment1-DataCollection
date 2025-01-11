@@ -27,10 +27,11 @@ COURSE_FILE = 'course_catalog.json'
 # FlaskInstrumentor().instrument_app(app)
 
 # Instrument Flask with OpenTelemetry
-FlaskInstrumentor().instrument_app(app)
+# FlaskInstrumentor().instrument_app(app)
 #
 # # Configure OpenTelemetry
 trace.set_tracer_provider(TracerProvider())
+tracer = trace.get_tracer(__name__)
 console_exporter = ConsoleSpanExporter()
 trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
 
@@ -51,53 +52,92 @@ def save_courses(data):
     with open(COURSE_FILE, 'w') as file:
         json.dump(courses, file, indent=4)
 
+def trace_span(name, Kind=SpanKind.SERVER):
+    return tracer.start_as_current_span(name, kind=Kind)
+
+def span_attributes(span):
+    span.set_attribute("http.method", request.method)
+    span.set_attribute("http.url", request.url)
+    span.set_attribute("peer.ip", request.remote_addr)
+    span.set_attribute("http.user_agent", request.headers.get('User-Agent', 'Unknown'))
 
 # Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    with trace_span("root-span") as span:
+        span_attributes(span)        
+        response = render_template('index.html')
+        span.add_event("Rendered Course Information Panel")
+        span.set_attribute("http.status_code", 200)
+
+        return response, 200
+
 
 
 @app.route('/catalog')
 def course_catalog():
-    courses = load_courses()
-    return render_template('course_catalog.html', courses=courses)
+    with trace_span("catalog-span") as span:
+        span_attributes(span)
+        courses = load_courses()
+        course_names = ", ".join(course['code'] + ' ' + course['name'] for course in courses)
+        span.add_event(f"Loaded Courses named: {course_names}")
+
+        response = render_template('course_catalog.html', courses=courses)
+        span.add_event("Rendered Course Catalog")
+        span.set_attribute("http.status_code", 200)
+        return response, 200
 
 
 @app.route('/add_course', methods=['GET', 'POST'])
 def add_course():
-    if request.method == 'POST':
-        course = {
-            'code': request.form['code'],
-            'name': request.form['name'],
-            'instructor': request.form['instructor'],
-            'semester': request.form['semester'],
-            'schedule': request.form['schedule'],
-            'classroom': request.form['classroom'],
-            'prerequisites': request.form['prerequisites'],
-            'grading': request.form['grading'],
-            'description': request.form['description']
-        }
+    with trace_span("add_course-span") as span:
+        span_attributes(span)
+        if request.method == 'POST':
+            course = {
+                'code': request.form['code'],
+                'name': request.form['name'],
+                'instructor': request.form['instructor'],
+                'semester': request.form['semester'],
+                'schedule': request.form['schedule'],
+                'classroom': request.form['classroom'],
+                'prerequisites': request.form['prerequisites'],
+                'grading': request.form['grading'],
+                'description': request.form['description']
+            }
 
-        if any(course[key].strip() == '' for key in list(course.keys())):
-        	flash(f"You have left some fields empty, Please fill up!!")
-        	return render_template('add_course.html')
-        	
-        save_courses(course)
+            span.add_event("Form Submissions Recorded")
 
-        flash(f"Course '{course['name']}' added successfully!", "success")
-        return redirect(url_for('course_catalog'))
-    return render_template('add_course.html')
+            if any(course[key].strip() == '' for key in list(course.keys())):
+                flash(f"You have left some fields empty, Please fill up!!")
+                span.add_event("Malformed Form Submissions")
+                return render_template('add_course.html')
+
+            span.add_event("Submissions Validated Successfully")
+            save_courses(course)
+
+            span.add_event("New Course Added: " + course['code'] + ' ' + course['name'])
+            flash(f"Course '{course['name']}' added successfully!", "success")
+            return redirect(url_for('course_catalog'))
+
+        response = render_template('add_course.html')
+        span.add_event("Rendered Add Course page")
+        return response, 200
 
 
 @app.route('/course/<code>')
 def course_details(code):
-    courses = load_courses()
-    course = next((course for course in courses if course['code'] == code), None)
-    if not course:
-        flash(f"No course found with code '{code}'.", "error")
-        return redirect(url_for('course_catalog'))
-    return render_template('course_details.html', course=course)
+    with trace_span("course_details-span") as span:
+        span_attributes(span)
+        courses = load_courses()
+        course = next((course for course in courses if course['code'] == code), None)
+        if not course:
+            span.add_event("Requested Course " + code + " Not found")
+            flash(f"No course found with code '{code}'.", "error")
+            return redirect(url_for('course_catalog'))
+
+        response = render_template('course_details.html', course=course)
+        span.add_event("Requested Course " + code + " details rendered")
+        return response, 200
 
 
 @app.route("/manual-trace")
