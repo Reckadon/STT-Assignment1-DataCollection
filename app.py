@@ -1,6 +1,5 @@
 import json
 import logging
-from logging.handlers import RotatingFileHandler
 import os
 import time
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -45,6 +44,8 @@ error_counter = meter.create_counter("error_counter", unit="requests", descripti
 page_access_counter = meter.create_counter("page_access_counter", unit="requests", description="Number of page accesses")
 
 timing_histogram = meter.create_histogram("timing_histogram", unit="ns", description="Request timing histogram")
+
+# python structured logging
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
