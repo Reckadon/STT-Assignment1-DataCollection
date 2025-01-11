@@ -42,6 +42,7 @@ def load_courses():
     with open(COURSE_FILE, 'r') as file:
         with create_span("load-courses-span") as span:
             span.add_event("Loaded Courses from JSON file")
+            span.set_status(StatusCode.OK)
             return json.load(file)
 
 
@@ -134,6 +135,8 @@ def add_course():
 
         response = render_template('add_course.html')
         span.add_event("Rendered Add Course page")
+        span.set_status(StatusCode.OK)
+        span.set_attribute("http.status_code", 200)
         return response, 200
 
 
