@@ -20,5 +20,16 @@
         "prerequisites": "Basic Python, Linux",
         "grading": "50% Assignment, 50% Quiz",
         "description": ""
+    },
+    {
+        "code": "69",
+        "name": "stt",
+        "instructor": "chudrA",
+        "semester": "4",
+        "schedule": "yrr",
+        "classroom": "5/102",
+        "prerequisites": "male",
+        "grading": "A",
+        "description": "easy course"
     }
 ]
