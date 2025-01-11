@@ -1,4 +1,6 @@
 import json
+import logging
+from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from opentelemetry import trace
@@ -7,6 +9,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.trace import SpanKind, StatusCode
+import time
 
 # Flask App Initialization
 app = Flask(__name__)
@@ -33,6 +36,23 @@ trace.get_tracer_provider().add_span_processor(span_processor)
 console_exporter = ConsoleSpanExporter()
 trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(console_exporter))
 
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_entry = {
+            'timestamp': self.formatTime(record),
+            'level': record.levelname,
+            'message': record.getMessage(),
+            'logger': record.name,
+            'filename': record.pathname,
+            'line': record.lineno
+        }
+        return json.dumps(log_entry, indent=4)
+
+handler = logging.FileHandler('application.log')
+handler.setFormatter(JsonFormatter())
+logger = logging.getLogger('Custom JSON Logger')
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 # Utility Functions
 def load_courses():
@@ -70,6 +90,7 @@ def index():
         span.add_event("Rendered Course Information Index Page")
         span.set_attribute("http.status_code", 200)
         span.set_status(StatusCode.OK)
+        logger.info("Page Rendered: Index")
         response = render_template('index.html')
         return response, 200
 
@@ -94,6 +115,7 @@ def course_catalog():
         span.add_event("Rendered Course Catalog")
         span.set_status(StatusCode.OK)
         span.set_attribute("http.status_code", 200)
+        logger.info("Page Rendered: Course Catalog")
         return response, 200
 
 
@@ -122,12 +144,14 @@ def add_course():
                 span.add_event("Malformed Form Submissions")
                 span.set_status(StatusCode.ERROR)
                 span.set_attribute("http.status_code", 400)
+                logger.warn("form_submission_warning: missing_required_fields")
                 return render_template('add_course.html')
 
             span.add_event("Submissions Validated Successfully")
             save_courses(course)
             span.add_event("New Course Added: " + course['code'] + ' ' + course['name'])
             flash(f"Course '{course['name']}' added successfully!", "success")
+            logger.info(f"Course Added: {course['code']} {course['name']}")
 
             span.set_status(StatusCode.OK)
             span.set_attribute("http.status_code", 200)
@@ -137,6 +161,7 @@ def add_course():
         span.add_event("Rendered Add Course page")
         span.set_status(StatusCode.OK)
         span.set_attribute("http.status_code", 200)
+        logger.info("Page Rendered: Add Course")
         return response, 200
 
 
@@ -152,6 +177,7 @@ def course_details(code):
             flash(f"No course found with code '{code}'.", "error")
             span.set_status(StatusCode.ERROR)
             span.set_attribute("http.status_code", 400)
+            logger.error(f"Course {code} Not Found")
             return redirect(url_for('course_catalog'))
 
         response = render_template('course_details.html', course=course)
@@ -159,6 +185,7 @@ def course_details(code):
 
         span.set_status(StatusCode.OK)
         span.set_attribute("http.status_code", 200)
+        logger.info("Page Rendered: Course Details")
         return response, 200
 
 

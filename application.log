@@ -1,0 +1,128 @@
+{
+    "timestamp": "2025-01-11 20:30:29,271",
+    "level": "INFO",
+    "message": "Page Rendered: Index",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 93
+}
+{
+    "timestamp": "2025-01-11 20:30:29,790",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
+{
+    "timestamp": "2025-01-11 20:30:30,402",
+    "level": "INFO",
+    "message": "Page Rendered: Add Course",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 164
+}
+{
+    "timestamp": "2025-01-11 20:30:31,425",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
+{
+    "timestamp": "2025-01-11 20:30:32,391",
+    "level": "INFO",
+    "message": "Page Rendered: Course Details",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 188
+}
+{
+    "timestamp": "2025-01-11 20:30:33,207",
+    "level": "INFO",
+    "message": "Page Rendered: Add Course",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 164
+}
+{
+    "timestamp": "2025-01-11 20:30:38,115",
+    "level": "WARNING",
+    "message": "form_submission_warning: missing_required_fields",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 147
+}
+{
+    "timestamp": "2025-01-11 20:30:43,709",
+    "level": "INFO",
+    "message": "Course Added: n mn",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 154
+}
+{
+    "timestamp": "2025-01-11 20:30:43,724",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
+{
+    "timestamp": "2025-01-11 20:30:45,252",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
+{
+    "timestamp": "2025-01-11 20:30:46,382",
+    "level": "INFO",
+    "message": "Page Rendered: Course Details",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 188
+}
+{
+    "timestamp": "2025-01-11 20:30:49,053",
+    "level": "INFO",
+    "message": "Page Rendered: Index",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 93
+}
+{
+    "timestamp": "2025-01-11 20:30:52,068",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
+{
+    "timestamp": "2025-01-11 20:30:53,235",
+    "level": "INFO",
+    "message": "Page Rendered: Course Details",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 188
+}
+{
+    "timestamp": "2025-01-11 20:30:55,579",
+    "level": "ERROR",
+    "message": "Course CS1016 Not Found",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 180
+}
+{
+    "timestamp": "2025-01-11 20:30:55,596",
+    "level": "INFO",
+    "message": "Page Rendered: Course Catalog",
+    "logger": "Custom JSON Logger",
+    "filename": "/home/blue/Documents/src/iitgn/sem4/STT-Assignment1-DataCollection/app.py",
+    "line": 118
+}
