@@ -31,5 +31,16 @@
         "prerequisites": "male",
         "grading": "A",
         "description": "easy course"
+    },
+    {
+        "code": "Es 654",
+        "name": "Intro to Physics",
+        "instructor": "Romit Mohane",
+        "semester": "4",
+        "schedule": "F1 F2",
+        "classroom": "1/102",
+        "prerequisites": "none",
+        "grading": "exams + worksheets",
+        "description": "this course talks about the introduction to basic concepts required for future courses."
     }
 ]
