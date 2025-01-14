@@ -42,5 +42,16 @@
         "prerequisites": "none",
         "grading": "exams + worksheets",
         "description": "this course talks about the introduction to basic concepts required for future courses."
+    },
+    {
+        "code": "CS 909",
+        "name": "Artificial Intelligence",
+        "instructor": "Basu",
+        "semester": "4",
+        "schedule": "F1 F2",
+        "classroom": "Jibaben",
+        "prerequisites": "ML",
+        "grading": "exams + quizzes + paper",
+        "description": "Best course"
     }
 ]
