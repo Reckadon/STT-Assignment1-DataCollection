@@ -123,11 +123,11 @@ def index():
     """renders the index page"""
     with create_span("index-span") as span:
         span_attributes(span)
-        span.add_event("Rendered Course Information Index Page")
-        span.set_status(StatusCode.OK)
+        span.add_event("Rendered Course Information Index Page")   # add an event to the span, which will be logged
+        span.set_status(StatusCode.OK)  # gives a status code to the span
         logger.info("Page Rendered: Index")
         response = render_template('index.html')
-        page_access_counter.add(1, {"page": "index"})
+        page_access_counter.add(1, {"page": "index"})  # the second argument - attributes, helps to identify and segregate metrics in a single counter
         return response, 200
 
 
